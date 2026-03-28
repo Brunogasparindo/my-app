@@ -37,6 +37,7 @@ class ApiService {
         // If 401 Unauthorized, token may have expired
         if (error.response?.status === 401) {
           this.clearToken();
+          localStorage.removeItem('refreshToken');
           window.location.href = '/login';
         }
         return Promise.reject(error);

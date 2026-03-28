@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
-import { User, AuthCredentials, AuthContextType, AuthResponse } from '../types/auth.types';
+import { User, AuthCredentials, AuthContextType, LoginApiResponse, RefreshApiResponse } from '../types/auth.types';
 import apiService from '../services/api.service';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -40,13 +40,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const login = useCallback(async (credentials: AuthCredentials) => {
     try {
       setIsLoading(true);
-      const response = await apiService.post<AuthResponse>('/auth/login', credentials);
+      const response = await apiService.post<LoginApiResponse>('/auth/login', credentials);
 
-      // Save token and user data
       apiService.setToken(response.token);
       setToken(response.token);
-      setUser(response.user);
       localStorage.setItem('authToken', response.token);
+      localStorage.setItem('refreshToken', response.refreshToken);
+
+      const userData = await apiService.get<User>('/auth/me');
+      setUser(userData);
     } finally {
       setIsLoading(false);
     }
@@ -59,6 +61,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setUser(null);
     setToken(null);
     localStorage.removeItem('authToken');
+    localStorage.removeItem('refreshToken');
     apiService.clearToken();
   }, []);
 
@@ -67,11 +70,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
    */
   const refreshToken = useCallback(async () => {
     try {
-      const response = await apiService.post<AuthResponse>('/auth/refresh');
-      apiService.setToken(response.token);
-      setToken(response.token);
-      setUser(response.user);
-      localStorage.setItem('authToken', response.token);
+      const storedRefreshToken = localStorage.getItem('refreshToken');
+      const response = await apiService.post<RefreshApiResponse>('/auth/refresh', { refreshToken: storedRefreshToken });
+      apiService.setToken(response.accessToken);
+      setToken(response.accessToken);
+      localStorage.setItem('authToken', response.accessToken);
+      localStorage.setItem('refreshToken', response.refreshToken);
+
+      const userData = await apiService.get<User>('/auth/me');
+      setUser(userData);
     } catch (error) {
       logout();
       throw error;

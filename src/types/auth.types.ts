@@ -25,6 +25,18 @@ export interface AuthResponse {
   expiresIn: number;
 }
 
+export interface LoginApiResponse {
+  userId: string;
+  email: string;
+  token: string;
+  refreshToken: string;
+}
+
+export interface RefreshApiResponse {
+  accessToken: string;
+  refreshToken: string;
+}
+
 export interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
