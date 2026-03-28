@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find C:/oo/dev/my-app/src -type f -name *.tsx -o -name *.ts -o -name *.jsx -o -name *.js)",
+      "Bash(grep -r \"apiService\\\\.\\\\|apiService\\\\.get\\\\|apiService\\\\.post\\\\|apiService\\\\.put\\\\|apiService\\\\.delete\" C:/oo/dev/my-app/src --include=*.ts --include=*.tsx)",
+      "Bash(find C:/oo/dev/my-app -name .env* -o -name *.env*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
+    ]
+  }
+}
