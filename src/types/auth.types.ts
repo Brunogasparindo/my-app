@@ -25,6 +25,11 @@ export interface AuthResponse {
   expiresIn: number;
 }
 
+export interface RegisterApiResponse {
+  userId: string;
+  email: string;
+}
+
 export interface LoginApiResponse {
   userId: string;
   email: string;

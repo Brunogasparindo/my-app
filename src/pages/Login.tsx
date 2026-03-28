@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { AuthCredentials } from '../types/auth.types';
 
@@ -8,7 +8,9 @@ import { AuthCredentials } from '../types/auth.types';
  */
 export const Login: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { login, isLoading } = useAuth();
+  const registered = (location.state as any)?.registered;
   const [credentials, setCredentials] = useState<AuthCredentials>({
     email: '',
     password: '',
@@ -37,6 +39,11 @@ export const Login: React.FC = () => {
   return (
     <div style={{ maxWidth: '400px', margin: '50px auto', padding: '20px' }}>
       <h1>Login</h1>
+      {registered && (
+        <div style={{ color: 'green', marginBottom: '20px' }}>
+          Account created successfully. Please log in.
+        </div>
+      )}
       {error && <div style={{ color: 'red', marginBottom: '20px' }}>{error}</div>}
       <form onSubmit={handleSubmit}>
         <div style={{ marginBottom: '15px' }}>
@@ -77,6 +84,9 @@ export const Login: React.FC = () => {
           {isLoading ? 'Logging in...' : 'Login'}
         </button>
       </form>
+      <p style={{ marginTop: '20px', textAlign: 'center' }}>
+        Don't have an account? <Link to="/register">Register</Link>
+      </p>
     </div>
   );
 };
